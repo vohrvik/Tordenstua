@@ -18,6 +18,9 @@
 <script>
 (function(){
 const CALENDAR_ID='tordenstua@gmail.com';
+// LIM INN DIN NYE GOOGLE CALENDAR API-NØKKEL MELLOM ANFØRSELSTEGNENE UNDER.
+// Merk: Nøkkelen vil være synlig i kildekoden på det offentlige GitHub-nettstedet.
+const PUBLIC_API_KEY='AIzaSyCfXzKcl8PWCVK45c6bnJ46910A0wwI5iw';
 const STORAGE_KEY='tordenstua_google_calendar_api_key';
 const keyField=document.getElementById('apiKey');
 const setup=document.getElementById('setup');
@@ -78,8 +81,9 @@ function init(apiKey){
  setup.hidden=!!apiKey;
 }
 let saved='';try{saved=localStorage.getItem(STORAGE_KEY)||''}catch(e){}
-keyField.value=saved;
-init(saved);
+const configured=PUBLIC_API_KEY!=='LIM_INN_NY_API_NOKKEL_HER' ? PUBLIC_API_KEY.trim() : '';
+keyField.value=configured||saved;
+init(configured||saved);
 document.getElementById('save').addEventListener('click',()=>{const key=keyField.value.trim();if(!key){status.textContent='Skriv inn en API-nøkkel.';return}try{localStorage.setItem(STORAGE_KEY,key)}catch(e){}status.textContent='';init(key)});
 document.getElementById('refresh').addEventListener('click',()=>{if(calendar){calendar.refetchEvents();followClock()}});
 document.getElementById('fullscreen').addEventListener('click',()=>{if(!document.fullscreenElement){document.documentElement.requestFullscreen?.()}else{document.exitFullscreen?.()}});
