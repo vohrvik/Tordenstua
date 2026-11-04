@@ -1,97 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="no">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tordenstua – arbeidsukekalender</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.20/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.20/index.global.min.js"></script>
 <style>
-:root{font-family:Inter,Arial,Helvetica,sans-serif;color:#e9f1fc;background:#0b1321}*{box-sizing:border-box}body{margin:0;padding:22px}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{font-size:clamp(24px,3vw,42px);letter-spacing:-.03em;margin:0}header p{margin:5px 0 0;color:#a9b8d0}.shell{background:white;color:#172338;border-radius:17px;padding:16px;min-height:80vh}#calendar{height:calc(100vh - 155px);min-height:650px}.fc .fc-toolbar-title{font-size:clamp(18px,2vw,27px);font-weight:750}.fc .fc-col-header-cell{background:#f0f5fc}.fc .fc-col-header-cell-cushion{padding:12px 5px;font-size:clamp(15px,1.5vw,22px);text-transform:capitalize}.fc .fc-timegrid-slot{height:3.3em}.fc .fc-timegrid-axis-cushion,.fc .fc-timegrid-slot-label-cushion{font-size:15px}.fc .fc-event{font-size:clamp(13px,1.1vw,18px);border-radius:7px;padding:4px;border:0;box-shadow:0 2px 5px #0002}.fc .fc-event-main{padding:4px;overflow:hidden}.fc .fc-event-main div{overflow-wrap:anywhere;line-height:1.2}.fc .fc-timegrid-event{overflow:hidden}.fc .fc-button-primary{background:#223f68;border-color:#223f68}.fc .fc-button-primary:hover{background:#345b90}.fc .fc-day-today{background:#eef6ff!important}.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}button{cursor:pointer;background:#203854;color:white;border:1px solid #51677f;border-radius:8px;padding:9px 14px;font-size:15px}#setup{background:#fff7e7;color:#473512;padding:16px 20px;border-radius:12px;margin-bottom:14px}#setup input{width:min(100%,440px);padding:10px;border:1px solid #ad9c73;border-radius:7px;font:inherit}#setup button{background:#273c60}#status{margin:8px 0;color:#85521b;font-size:14px}a{color:#174ca4}footer{font-size:12px;color:#afbed2;margin-top:12px}@media(max-width:700px){body{padding:8px}.shell{padding:5px}#calendar{height:calc(100vh - 130px)}.fc .fc-toolbar{display:flex;flex-wrap:wrap;gap:8px}.fc .fc-timegrid-slot{height:2.5em}.fc .fc-button{padding:7px}.fc .fc-event{font-size:12px}}
-.controls { display: none !important; }
-footer { display: none !important; }
+:root{font-family:Inter,Arial,Helvetica,sans-serif;background:#0b1321;color:#eef4ff}
+*{box-sizing:border-box}body{margin:0;padding:14px}header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 6px 12px}h1{font-size:clamp(24px,2.2vw,38px);margin:0}header p{margin:3px 0 0;color:#aebed4;font-size:clamp(12px,1vw,16px)}#clock{font-size:clamp(22px,2vw,32px);font-variant-numeric:tabular-nums;font-weight:650}.shell{background:#fff;color:#172338;border-radius:14px;padding:10px}#calendar{height:calc(100dvh - 110px);min-height:530px}.fc .fc-toolbar-title{font-size:clamp(17px,1.55vw,25px);font-weight:750}.fc .fc-col-header-cell{background:#eef5fd}.fc .fc-col-header-cell-cushion{padding:12px 5px;font-size:clamp(13px,1.35vw,20px);text-transform:capitalize}.fc .fc-timegrid-slot{height:3.1em}.fc .fc-event{font-size:clamp(12px,1vw,17px);border:0;border-radius:6px;padding:3px;box-shadow:0 1px 5px #0002}.fc .fc-event-main{padding:3px;overflow:hidden}.fc .fc-event-main div{overflow-wrap:anywhere;line-height:1.18}.fc .fc-timegrid-event{overflow:hidden}.fc .fc-day-today{background:#eaf4ff!important}.fc .fc-button-primary{background:#223f68;border-color:#223f68}.fc .fc-button-primary:hover{background:#345b90}#notice{display:none;padding:10px 15px;margin-bottom:8px;border-radius:8px;background:#fff4d7;color:#674600;font-size:14px}@media(max-width:700px){body{padding:6px}header{padding-bottom:6px}.shell{padding:5px}#calendar{height:calc(100dvh - 90px)}.fc .fc-timegrid-slot{height:2.3em}.fc .fc-toolbar-title{font-size:16px}.fc .fc-event{font-size:11px}}
 </style>
 </head>
 <body>
-<header><div><h1>Tordenstua</h1><p>Kalender – mandag til fredag</p></div><div class="controls"><button id="refresh">Oppdater nå</button><button id="fullscreen">Fullskjerm</button></div></header>
-<section id="setup" hidden><strong>Oppsett: Google Kalender</strong><p>For å vise avtalene fra <b>tordenstua@gmail.com</b>, opprett en Google Calendar API-nøkkel og sørg for at kalenderen er offentlig med synlige avtaledetaljer. Nøkkelen kan lagres lokalt i denne nettleseren. Bruk en nøkkel begrenset til Calendar API og riktig nettsted ved publisering.</p><input id="apiKey" type="text" placeholder="Lim inn Google Calendar API-nøkkel" autocomplete="off"><button id="save">Koble til kalender</button><p id="status"></p><small><a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noreferrer">Aktiver Google Calendar API</a> · <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer">Opprett API-nøkkel</a></small></section>
+<header><div><h1>Tordenstua</h1><p>Møtekalender · mandag–fredag</p></div><div id="clock" aria-label="Klokkeslett i Norge"></div></header>
+<div id="notice" role="status"></div>
 <div class="shell"><div id="calendar"></div></div>
-<footer>Viser mandag–fredag i valgt uke · Følger klokken automatisk · Tidssone: Europe/Oslo · Oppdaterer hvert 5. minutt · Hendelser åpnes i Google Kalender</footer>
 <script>
-(function(){
-const CALENDAR_ID='tordenstua@gmail.com';
-// LIM INN DIN NYE GOOGLE CALENDAR API-NØKKEL MELLOM ANFØRSELSTEGNENE UNDER.
-// Merk: Nøkkelen vil være synlig i kildekoden på det offentlige GitHub-nettstedet.
-const PUBLIC_API_KEY='';
-const STORAGE_KEY='tordenstua_google_calendar_api_key';
-const keyField=document.getElementById('apiKey');
-const setup=document.getElementById('setup');
-const status=document.getElementById('status');
-let calendar;
-// Beregn lokal klokketid i Norge, også hvis skjermen er satt til en annen tidssone.
-function osloNow(){
- const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
- const hour=Number(parts.find(x=>x.type==='hour').value);
- const minute=Number(parts.find(x=>x.type==='minute').value);
- return {hour,minute};
-}
-function timeToShow(){
- const {hour,minute}=osloNow();
- // Vis gjeldende klokkeslett omtrent 45 minutter ned i kalendervinduet.
- const mins=Math.max(6*60,hour*60+minute-45);
- return String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0')+':00';
-}
-function followClock(){if(calendar)calendar.scrollToTime(timeToShow());}
-function init(apiKey){
- if(calendar)calendar.destroy();
- calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
-   initialView:'timeGridWeek',
-   weekends:false,
-   initialDate:new Date(),
-   timeZone:'Europe/Oslo',
-   locale:'nb',
-   firstDay:1,
-   headerToolbar:{left:'prev,next today',center:'title',right:''},
-   buttonText:{today:'Denne uken'},
-   nowIndicator:true,
-   allDayText:'Hele dagen',
-   allDaySlot:true,
-   slotMinTime:'06:00:00',slotMaxTime:'23:00:00',
-   scrollTime:timeToShow(),
-   scrollTimeReset:false,
-   slotDuration:'00:30:00',
-   height:'100%',
-   expandRows:true,
-   eventMinHeight:38,
-   eventShortHeight:28,
-   eventTimeFormat:{hour:'2-digit',minute:'2-digit',hour12:false},
-   googleCalendarApiKey:apiKey,
-   events:{googleCalendarId:CALENDAR_ID, failure:function(err){setup.hidden=false;status.textContent='Kunne ikke hente kalenderen. Kontroller API-nøkkel, kalenderdeling og kalender-ID. '+(err&&err.message?err.message:'');}},
-   eventContent:function(info){
-     const box=document.createElement('div');
-     const time=document.createElement('div');time.style.fontWeight='700';time.textContent=info.timeText||'Hele dagen';
-     const title=document.createElement('div');title.style.fontWeight='650';title.textContent=info.event.title;
-     box.append(time,title);
-     const location=info.event.extendedProps.location;
-     if(location){const loc=document.createElement('div');loc.style.fontSize='.85em';loc.textContent=location;box.append(loc)}
-     return {domNodes:[box]};
-   },
-   eventClick:function(info){if(info.event.url){info.jsEvent.preventDefault();window.open(info.event.url,'_blank','noopener,noreferrer')}}
- });
- calendar.render();
- followClock();
- setup.hidden=!!apiKey;
-}
-let saved='';try{saved=localStorage.getItem(STORAGE_KEY)||''}catch(e){}
-const configured=PUBLIC_API_KEY!=='LIM_INN_NY_API_NOKKEL_HER' ? PUBLIC_API_KEY.trim() : '';
-keyField.value=configured||saved;
-init(configured||saved);
-document.getElementById('save').addEventListener('click',()=>{const key=keyField.value.trim();if(!key){status.textContent='Skriv inn en API-nøkkel.';return}try{localStorage.setItem(STORAGE_KEY,key)}catch(e){}status.textContent='';init(key)});
-document.getElementById('refresh').addEventListener('click',()=>{if(calendar){calendar.refetchEvents();followClock()}});
-document.getElementById('fullscreen').addEventListener('click',()=>{if(!document.fullscreenElement){document.documentElement.requestFullscreen?.()}else{document.exitFullscreen?.()}});
-setInterval(()=>{if(calendar){calendar.refetchEvents();followClock()}},300000);
-// Flytt tidslinjen også når det ikke er nye avtaler.
-setInterval(followClock,60000);
+(()=>{
+  const notice=document.getElementById('notice'), clock=document.getElementById('clock');
+  const formatter=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const dateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Oslo',year:'numeric',month:'2-digit',day:'2-digit'});
+  const nowOslo=()=>{
+    const parts=formatter.formatToParts(new Date());
+    return {hour:Number(parts.find(p=>p.type==='hour').value),minute:Number(parts.find(p=>p.type==='minute').value)};
+  };
+  const scrollAt=()=>{
+    const {hour,minute}=nowOslo();const total=Math.max(360,Math.min(22*60,hour*60+minute-45));
+    return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}:00`;
+  };
+  function updateClock(){clock.textContent=formatter.format(new Date());}
+  const calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
+    initialView:'timeGridWeek',weekends:false,firstDay:1,locale:'nb',timeZone:'Europe/Oslo',
+    headerToolbar:{left:'prev,next today',center:'title',right:''},buttonText:{today:'Denne uken'},
+    nowIndicator:true,allDayText:'Hele dagen',allDaySlot:true,slotMinTime:'06:00:00',slotMaxTime:'23:00:00',
+    scrollTime:scrollAt(),scrollTimeReset:false,slotDuration:'00:30:00',height:'100%',
+    eventMinHeight:38,eventShortHeight:28,eventTimeFormat:{hour:'2-digit',minute:'2-digit',hour12:false},
+    events:{url:'./calendar.ics',format:'ics',failure:()=>{notice.style.display='block';notice.textContent='Kalenderdata er ikke hentet ennå. Kjør «Oppdater ICS-kalender» under GitHub Actions.';}},
+    eventContent:info=>{
+      const root=document.createElement('div');
+      const t=document.createElement('div');t.style.fontWeight='700';t.textContent=info.timeText||'Hele dagen';
+      const title=document.createElement('div');title.style.fontWeight='650';title.textContent=info.event.title;
+      root.append(t,title);
+      const loc=info.event.extendedProps.location;
+      if(loc){const location=document.createElement('div');location.style.fontSize='.85em';location.textContent=loc;root.append(location)}
+      return {domNodes:[root]};
+    },
+    eventClick:info=>{if(info.event.url){info.jsEvent.preventDefault();window.open(info.event.url,'_blank','noopener,noreferrer')}}
+  });
+  calendar.render();updateClock();calendar.scrollToTime(scrollAt());
+  let lastDate=dateFormatter.format(new Date());
+  setInterval(()=>{
+    updateClock();
+    const d=dateFormatter.format(new Date());
+    if(d!==lastDate){lastDate=d;calendar.today();}
+    calendar.scrollToTime(scrollAt());
+  },60000);
+  setInterval(()=>calendar.refetchEvents(),300000);
 })();
 </script>
 </body>
