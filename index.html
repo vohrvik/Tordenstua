@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.20/index.global.min.js"></script>
 <style>
 :root{font-family:Inter,Arial,Helvetica,sans-serif;background:#0b1321;color:#eef4ff}
-*{box-sizing:border-box}body{margin:0;padding:14px}header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 6px 12px}h1{font-size:clamp(24px,2.2vw,38px);margin:0}header p{margin:3px 0 0;color:#aebed4;font-size:clamp(12px,1vw,16px)}#clock{font-size:clamp(22px,2vw,32px);font-variant-numeric:tabular-nums;font-weight:650}.shell{background:#fff;color:#172338;border-radius:14px;padding:10px}#calendar{height:calc(100dvh - 110px);min-height:530px}.fc .fc-toolbar-title{font-size:clamp(17px,1.55vw,25px);font-weight:750}.fc .fc-col-header-cell{background:#eef5fd}.fc .fc-col-header-cell-cushion{padding:12px 5px;font-size:clamp(13px,1.35vw,20px);text-transform:capitalize}.fc .fc-timegrid-slot{height:3.1em}.fc .fc-event{font-size:clamp(12px,1vw,17px);border:0;border-radius:6px;padding:3px;box-shadow:0 1px 5px #0002}.fc .fc-event-main{padding:3px;overflow:hidden}.fc .fc-event-main div{overflow-wrap:anywhere;line-height:1.18}.fc .fc-timegrid-event{overflow:hidden}.fc .fc-day-today{background:#eaf4ff!important}.fc .fc-button-primary{background:#223f68;border-color:#223f68}.fc .fc-button-primary:hover{background:#345b90}#notice{display:none;padding:10px 15px;margin-bottom:8px;border-radius:8px;background:#fff4d7;color:#674600;font-size:14px}@media(max-width:700px){body{padding:6px}header{padding-bottom:6px}.shell{padding:5px}#calendar{height:calc(100dvh - 90px)}.fc .fc-timegrid-slot{height:2.3em}.fc .fc-toolbar-title{font-size:16px}.fc .fc-event{font-size:11px}}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;padding:14px;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;overflow:hidden}header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 6px 12px}h1{font-size:clamp(24px,2.2vw,38px);margin:0}header p{margin:3px 0 0;color:#aebed4;font-size:clamp(12px,1vw,16px)}#clock{font-size:clamp(22px,2vw,32px);font-variant-numeric:tabular-nums;font-weight:650}.shell{background:#fff;color:#172338;border-radius:14px;padding:10px;flex:1 1 0;min-height:0;display:flex;flex-direction:column}#calendar{height:100%;min-height:0;flex:1 1 0}.fc .fc-toolbar-title{font-size:clamp(17px,1.55vw,25px);font-weight:750}.fc .fc-col-header-cell{background:#eef5fd}.fc .fc-col-header-cell-cushion{padding:8px 5px;font-size:clamp(13px,1.35vw,20px);text-transform:capitalize}.fc .fc-timegrid-slot{height:clamp(14px,calc((100dvh - 260px)/20),55px)}.fc .fc-event{font-size:clamp(11px,.9vw,15px);border:0;border-radius:6px;padding:2px;box-shadow:0 1px 5px #0002}.fc .fc-event-main{padding:2px;overflow:hidden}.fc .fc-event-main div{overflow-wrap:anywhere;line-height:1.18}.fc .fc-timegrid-event{overflow:hidden}.fc .fc-day-today{background:#eaf4ff!important}.fc .fc-button-primary{background:#223f68;border-color:#223f68}.fc .fc-button-primary:hover{background:#345b90}#notice{display:none;padding:10px 15px;margin-bottom:8px;border-radius:8px;background:#fff4d7;color:#674600;font-size:14px}@media(max-width:700px){body{padding:6px}header{padding-bottom:6px}.shell{padding:5px}#calendar{height:100%;min-height:0}.fc .fc-timegrid-slot{height:clamp(11px,calc((100dvh - 205px)/20),42px)}.fc .fc-toolbar-title{font-size:16px}.fc .fc-event{font-size:11px}}
 </style>
 </head>
 <body>
@@ -20,21 +20,13 @@
   const notice=document.getElementById('notice'), clock=document.getElementById('clock');
   const formatter=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
   const dateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Oslo',year:'numeric',month:'2-digit',day:'2-digit'});
-  const nowOslo=()=>{
-    const parts=formatter.formatToParts(new Date());
-    return {hour:Number(parts.find(p=>p.type==='hour').value),minute:Number(parts.find(p=>p.type==='minute').value)};
-  };
-  const scrollAt=()=>{
-    const {hour,minute}=nowOslo();const total=Math.max(7*60,Math.min(16*60,hour*60+minute-45));
-    return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}:00`;
-  };
   function updateClock(){clock.textContent=formatter.format(new Date());}
   const calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
     initialView:'timeGridWeek',weekends:false,firstDay:1,locale:'nb',timeZone:'Europe/Oslo',
     headerToolbar:{left:'prev,next today',center:'title',right:''},buttonText:{today:'Denne uken'},
-    nowIndicator:true,allDayText:'Hele dagen',allDaySlot:true,slotMinTime:'07:00:00',slotMaxTime:'17:00:00',
-    scrollTime:scrollAt(),scrollTimeReset:false,slotDuration:'00:30:00',height:'100%',
-    eventMinHeight:38,eventShortHeight:28,eventTimeFormat:{hour:'2-digit',minute:'2-digit',hour12:false},
+    nowIndicator:true,allDayText:'Hele dagen',allDaySlot:true,dayMaxEventRows:2,slotMinTime:'07:00:00',slotMaxTime:'17:00:00',
+    scrollTime:'07:00:00',scrollTimeReset:false,slotDuration:'00:30:00',slotLabelInterval:'01:00:00',height:'100%',
+    eventMinHeight:20,eventShortHeight:18,eventTimeFormat:{hour:'2-digit',minute:'2-digit',hour12:false},
     events:{url:'./calendar.ics',format:'ics',failure:()=>{notice.style.display='block';notice.textContent='Kalenderdata er ikke hentet ennå. Kjør «Oppdater ICS-kalender» under GitHub Actions.';}},
     eventContent:info=>{
       const root=document.createElement('div');
@@ -47,13 +39,12 @@
     },
     eventClick:info=>{if(info.event.url){info.jsEvent.preventDefault();window.open(info.event.url,'_blank','noopener,noreferrer')}}
   });
-  calendar.render();updateClock();calendar.scrollToTime(scrollAt());
+  calendar.render();updateClock();
   let lastDate=dateFormatter.format(new Date());
   setInterval(()=>{
     updateClock();
     const d=dateFormatter.format(new Date());
     if(d!==lastDate){lastDate=d;calendar.today();}
-    calendar.scrollToTime(scrollAt());
   },60000);
   setInterval(()=>calendar.refetchEvents(),300000);
 })();
