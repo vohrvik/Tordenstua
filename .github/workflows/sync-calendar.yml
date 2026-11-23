@@ -3,6 +3,9 @@ name: Oppdater ICS-kalender
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-calendar.yml'
   schedule:
     - cron: '*/15 * * * *'
 
