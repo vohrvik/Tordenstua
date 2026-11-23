@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - '.github/workflows/sync-calendar.yml'
+      - 'index.html'
   schedule:
     - cron: '*/15 * * * *'
 
