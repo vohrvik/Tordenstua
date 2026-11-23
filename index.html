@@ -25,14 +25,14 @@
     return {hour:Number(parts.find(p=>p.type==='hour').value),minute:Number(parts.find(p=>p.type==='minute').value)};
   };
   const scrollAt=()=>{
-    const {hour,minute}=nowOslo();const total=Math.max(360,Math.min(22*60,hour*60+minute-45));
+    const {hour,minute}=nowOslo();const total=Math.max(7*60,Math.min(16*60,hour*60+minute-45));
     return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}:00`;
   };
   function updateClock(){clock.textContent=formatter.format(new Date());}
   const calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
     initialView:'timeGridWeek',weekends:false,firstDay:1,locale:'nb',timeZone:'Europe/Oslo',
     headerToolbar:{left:'prev,next today',center:'title',right:''},buttonText:{today:'Denne uken'},
-    nowIndicator:true,allDayText:'Hele dagen',allDaySlot:true,slotMinTime:'06:00:00',slotMaxTime:'23:00:00',
+    nowIndicator:true,allDayText:'Hele dagen',allDaySlot:true,slotMinTime:'07:00:00',slotMaxTime:'17:00:00',
     scrollTime:scrollAt(),scrollTimeReset:false,slotDuration:'00:30:00',height:'100%',
     eventMinHeight:38,eventShortHeight:28,eventTimeFormat:{hour:'2-digit',minute:'2-digit',hour12:false},
     events:{url:'./calendar.ics',format:'ics',failure:()=>{notice.style.display='block';notice.textContent='Kalenderdata er ikke hentet ennå. Kjør «Oppdater ICS-kalender» under GitHub Actions.';}},
