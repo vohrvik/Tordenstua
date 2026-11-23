@@ -11,13 +11,20 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: tordenstua-pages
+  cancel-in-progress: false
+
 jobs:
   sync:
+    name: Hent ICS og klargjor nettside
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Hent offentlig Google Kalender som ICS
+    steps:
+      - name: Hent filer
+        uses: actions/checkout@v4
+
+      - name: Hent offentlig Google Kalender
         shell: bash
         run: |
           set -euo pipefail
@@ -29,25 +36,35 @@ jobs:
           grep -q 'END:VCALENDAR' calendar.ics.tmp
           mv calendar.ics.tmp calendar.ics
 
-      - name: Publiser bare når innholdet er endret
+      - name: Lagre ICS ved endringer
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add calendar.ics
           if ! git diff --cached --quiet; then
-            git commit -m 'Oppdater offentlige kalenderavtaler'
+            git commit -m 'Oppdater kalender'
             git push
           fi
 
-      - name: Klargjør GitHub Pages
+      - name: Klargjor GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Pakk nettstedet
-        uses: actions/upload-pages-artifact@v3
+      - name: Last opp nettsiden
+        uses: actions/upload-pages-artifact@v4
         with:
           path: .
 
-      - name: Publiser kalendernettsiden
+  deploy:
+    name: Publiser kalender
+    needs: sync
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publiser til GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
